@@ -15,7 +15,7 @@ const SEARCH_CONFIG: Record<string, { model: string; fields: string[]; labelFiel
 export async function globalSearch(req: Request, res: Response) {
   try {
     const q = (req.query.q as string || '').trim();
-    if (!q || q.length < 2) return res.json(successResponse([]));
+    if (!q || q.length < 2) return successResponse(res, []);
 
     const results: { entity: string; id: string; label: string; sub?: string }[] = [];
 
@@ -59,8 +59,8 @@ export async function globalSearch(req: Request, res: Response) {
     });
     surgeries.forEach(s => results.push({ entity: 'surgery', id: s.id, label: s.procedureName, sub: s.status }));
 
-    return res.json(successResponse(results));
+    return successResponse(res, results);
   } catch (e) {
-    return res.status(500).json(errorResponse('Search failed'));
+    return errorResponse(res, e);
   }
 }

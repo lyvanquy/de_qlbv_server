@@ -41,10 +41,19 @@ export const getBill = async (req: Request, res: Response) => {
 
 export const createBill = async (req: Request, res: Response) => {
   try {
-    const { patientId, items } = req.body;
+    const { patientId, items, discount = 0, insuranceCover = 0 } = req.body;
     const totalAmount = items.reduce((sum: number, i: { price: number; quantity: number }) => sum + i.price * i.quantity, 0);
+    const finalAmount = totalAmount - discount - insuranceCover;
     const bill = await prisma.bill.create({
-      data: { patientId, totalAmount, items: { create: items } },
+      data: { 
+        patientId, 
+        totalAmount, 
+        discount,
+        insuranceCover,
+        finalAmount,
+        items: { create: items },
+        patient: { connect: { id: patientId } }
+      },
       include: { items: true, patient: { select: { name: true } } },
     });
     return created(res, bill);
