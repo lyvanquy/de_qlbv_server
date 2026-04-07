@@ -19,7 +19,7 @@ export const getConsentForms = async (req: Request, res: Response) => {
       prisma.consentForm.count({ where }),
     ]);
     return successResponse(res, { forms, total, page: Number(page) });
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'getConsentForms'); }
 };
 
 export const getConsentForm = async (req: Request, res: Response) => {
@@ -30,14 +30,15 @@ export const getConsentForm = async (req: Request, res: Response) => {
     });
     if (!form) return res.status(404).json({ message: 'Not found' });
     return successResponse(res, form);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'getConsentForm'); }
 };
 
 export const createConsentForm = async (req: Request, res: Response) => {
   try {
+    console.log('[createConsentForm] Request body:', req.body);
     const form = await prisma.consentForm.create({ data: req.body });
     return successResponse(res, form, 201);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'createConsentForm'); }
 };
 
 export const signConsentForm = async (req: Request, res: Response) => {
@@ -48,19 +49,20 @@ export const signConsentForm = async (req: Request, res: Response) => {
       data: { signedAt: new Date(), signedBy, witnessId, fileUrl },
     });
     return successResponse(res, form);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'signConsentForm'); }
 };
 
 export const deleteConsentForm = async (req: Request, res: Response) => {
   try {
     await prisma.consentForm.delete({ where: { id: req.params.id } });
     return successResponse(res, { deleted: true });
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'deleteConsentForm'); }
 };
 
 export const updateConsentForm = async (req: Request, res: Response) => {
   try {
+    console.log('[updateConsentForm] Request body:', req.body);
     const form = await prisma.consentForm.update({ where: { id: req.params.id }, data: req.body });
     return successResponse(res, form);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'updateConsentForm'); }
 };

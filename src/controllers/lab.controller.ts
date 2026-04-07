@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
-import { ok, created, notFound, serverError } from '../utils/response';
+import { ok, created, notFound, errorResponse } from '../utils/response';
 
 export const getLabTests = async (req: Request, res: Response) => {
   try {
@@ -10,14 +10,15 @@ export const getLabTests = async (req: Request, res: Response) => {
       orderBy: { name: 'asc' },
     });
     return ok(res, tests);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'getLabTests'); }
 };
 
 export const createLabTest = async (req: Request, res: Response) => {
   try {
+    console.log('[createLabTest] Request body:', req.body);
     const test = await prisma.labTest.create({ data: req.body });
     return created(res, test);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'createLabTest'); }
 };
 
 export const getLabOrders = async (req: Request, res: Response) => {
@@ -42,11 +43,12 @@ export const getLabOrders = async (req: Request, res: Response) => {
       prisma.labOrder.count({ where }),
     ]);
     return ok(res, { orders, total });
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'getLabOrders'); }
 };
 
 export const createLabOrder = async (req: Request, res: Response) => {
   try {
+    console.log('[createLabOrder] Request body:', req.body);
     const { patientId, recordId, note, items } = req.body;
     const order = await prisma.labOrder.create({
       data: {
@@ -58,7 +60,7 @@ export const createLabOrder = async (req: Request, res: Response) => {
       include: { items: { include: { test: true } }, patient: { select: { name: true } } },
     });
     return created(res, order);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'createLabOrder'); }
 };
 
 export const updateLabResult = async (req: Request, res: Response) => {
@@ -82,7 +84,7 @@ export const updateLabResult = async (req: Request, res: Response) => {
       });
     }
     return ok(res, item);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'updateLabResult'); }
 };
 
 // ─── Specimen Tracking ────────────────────────────────────────────────────────
@@ -106,7 +108,7 @@ export const createSpecimen = async (req: Request, res: Response) => {
       data: { specimenId: (specimen as { id: string }).id, status: 'COLLECTED', performedBy: collectedBy, note: 'Lay mau' },
     });
     return created(res, specimen);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'createSpecimen'); }
 };
 
 export const updateSpecimenStatus = async (req: Request, res: Response) => {
@@ -131,19 +133,19 @@ export const updateSpecimenStatus = async (req: Request, res: Response) => {
     }
 
     return ok(res, specimen);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'updateSpecimenStatus'); }
 };
 
 export const deleteLabTest = async (req: Request, res: Response) => {
   try {
     await prisma.labTest.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Lab test deleted successfully');
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'deleteLabTest'); }
 };
 
 export const deleteLabOrder = async (req: Request, res: Response) => {
   try {
     await prisma.labOrder.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Lab order deleted successfully');
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'deleteLabOrder'); }
 };

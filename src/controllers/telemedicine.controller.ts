@@ -23,7 +23,7 @@ export const getTeleConsults = async (req: Request, res: Response) => {
       prisma.teleConsult.count({ where }),
     ]);
     return successResponse(res, { consults, total, page: Number(page) });
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'getTeleConsults'); }
 };
 
 export const getTeleConsult = async (req: Request, res: Response) => {
@@ -37,21 +37,23 @@ export const getTeleConsult = async (req: Request, res: Response) => {
     });
     if (!consult) return res.status(404).json({ message: 'Not found' });
     return successResponse(res, consult);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'getTeleConsult'); }
 };
 
 export const createTeleConsult = async (req: Request, res: Response) => {
   try {
+    console.log('[createTeleConsult] Request body:', req.body);
     const consult = await prisma.teleConsult.create({ data: req.body });
     return successResponse(res, consult, 201);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'createTeleConsult'); }
 };
 
 export const updateTeleConsult = async (req: Request, res: Response) => {
   try {
+    console.log('[updateTeleConsult] Request body:', req.body);
     const consult = await prisma.teleConsult.update({ where: { id: req.params.id }, data: req.body });
     return successResponse(res, consult);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'updateTeleConsult'); }
 };
 
 export const startSession = async (req: Request, res: Response) => {
@@ -61,7 +63,7 @@ export const startSession = async (req: Request, res: Response) => {
       data: { status: 'IN_PROGRESS', startedAt: new Date() },
     });
     return successResponse(res, consult);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'startSession'); }
 };
 
 export const endSession = async (req: Request, res: Response) => {
@@ -71,12 +73,12 @@ export const endSession = async (req: Request, res: Response) => {
       data: { status: 'COMPLETED', endedAt: new Date(), note: req.body.note },
     });
     return successResponse(res, consult);
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'endSession'); }
 };
 
 export const deleteTeleConsult = async (req: Request, res: Response) => {
   try {
     await prisma.teleConsult.delete({ where: { id: req.params.id } });
     return successResponse(res, { deleted: true });
-  } catch (e) { return errorResponse(res, e); }
+  } catch (e) { return errorResponse(res, e, 'deleteTeleConsult'); }
 };

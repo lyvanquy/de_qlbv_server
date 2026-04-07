@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
-import { ok, created, notFound, serverError, badRequest } from '../utils/response';
+import { ok, created, notFound, badRequest, errorResponse } from '../utils/response';
 
 export const getMedicines = async (req: Request, res: Response) => {
   try {
@@ -15,21 +15,23 @@ export const getMedicines = async (req: Request, res: Response) => {
       prisma.medicine.count({ where }),
     ]);
     return ok(res, { medicines, total });
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'getMedicines'); }
 };
 
 export const createMedicine = async (req: Request, res: Response) => {
   try {
+    console.log('[createMedicine] Request body:', req.body);
     const medicine = await prisma.medicine.create({ data: req.body });
     return created(res, medicine);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'createMedicine'); }
 };
 
 export const updateMedicine = async (req: Request, res: Response) => {
   try {
+    console.log('[updateMedicine] Request body:', req.body);
     const medicine = await prisma.medicine.update({ where: { id: req.params.id }, data: req.body });
     return ok(res, medicine);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'updateMedicine'); }
 };
 
 export const adjustStock = async (req: Request, res: Response) => {
@@ -48,15 +50,14 @@ export const adjustStock = async (req: Request, res: Response) => {
       prisma.stockMovement.create({ data: { medicineId: id, type, quantity, reason } }),
     ]);
     return ok(res, updated);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'adjustStock'); }
 };
 
 export const deleteMedicine = async (req: Request, res: Response) => {
   try {
     await prisma.medicine.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Medicine deleted successfully');
-  } catch { return serverError(res); }
-};
+  } catch (err) { return errorResponse(res, err, 'deleteMedicine'); }
 };
 
 export const dispensePrescription = async (req: Request, res: Response) => {
@@ -76,7 +77,7 @@ export const dispensePrescription = async (req: Request, res: Response) => {
       prisma.stockMovement.create({ data: { medicineId: prescription.medicineId, type: 'OUT', quantity: prescription.quantity, reason: `Dispensed prescription ${prescriptionId}` } }),
     ]);
     return ok(res, null, 'Dispensed successfully');
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'dispensePrescription'); }
 };
 
 export const getLowStockAlerts = async (_req: Request, res: Response) => {
@@ -85,5 +86,5 @@ export const getLowStockAlerts = async (_req: Request, res: Response) => {
       SELECT * FROM "Medicine" WHERE stock <= "minStock" ORDER BY stock ASC
     `;
     return ok(res, medicines);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'getLowStockAlerts'); }
 };

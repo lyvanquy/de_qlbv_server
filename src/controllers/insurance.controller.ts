@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
-import { ok, created, notFound, serverError } from '../utils/response';
+import { ok, created, errorResponse } from '../utils/response';
 
 const ip = () => prisma as never as {
   insurancePolicy: { findMany: (a: unknown) => Promise<unknown[]>; create: (a: unknown) => Promise<unknown> };
@@ -16,14 +16,15 @@ export const getPolicies = async (req: Request, res: Response) => {
       orderBy: { validTo: 'desc' },
     });
     return ok(res, policies);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'getPolicies'); }
 };
 
 export const createPolicy = async (req: Request, res: Response) => {
   try {
+    console.log('[createPolicy] Request body:', req.body);
     const policy = await ip().insurancePolicy.create({ data: req.body });
     return created(res, policy);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'createPolicy'); }
 };
 
 export const getClaims = async (req: Request, res: Response) => {
@@ -35,14 +36,15 @@ export const getClaims = async (req: Request, res: Response) => {
       orderBy: { createdAt: 'desc' },
     });
     return ok(res, claims);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'getClaims'); }
 };
 
 export const createClaim = async (req: Request, res: Response) => {
   try {
+    console.log('[createClaim] Request body:', req.body);
     const claim = await ip().insuranceClaim.create({ data: req.body });
     return created(res, claim);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'createClaim'); }
 };
 
 export const updateClaimStatus = async (req: Request, res: Response) => {
@@ -58,7 +60,7 @@ export const updateClaimStatus = async (req: Request, res: Response) => {
       },
     });
     return ok(res, claim);
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'updateClaimStatus'); }
 };
 
 export const deletePolicy = async (req: Request, res: Response) => {
@@ -66,7 +68,7 @@ export const deletePolicy = async (req: Request, res: Response) => {
     const ipr = prisma as never as { insurancePolicy: { delete: (a: unknown) => Promise<unknown> } };
     await ipr.insurancePolicy.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Policy deleted successfully');
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'deletePolicy'); }
 };
 
 export const deleteClaim = async (req: Request, res: Response) => {
@@ -74,5 +76,5 @@ export const deleteClaim = async (req: Request, res: Response) => {
     const ipr = prisma as never as { insuranceClaim: { delete: (a: unknown) => Promise<unknown> } };
     await ipr.insuranceClaim.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Claim deleted successfully');
-  } catch { return serverError(res); }
+  } catch (err) { return errorResponse(res, err, 'deleteClaim'); }
 };

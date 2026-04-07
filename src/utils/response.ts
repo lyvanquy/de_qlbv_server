@@ -25,8 +25,8 @@ export const serverError = (res: Response, message = 'Internal Server Error') =>
 export const successResponse = (res: Response, data: unknown, status = 200) =>
   res.status(status).json({ success: true, data });
 
-export const errorResponse = (res: Response, err: unknown) => {
-  console.error(err);
+export const errorResponse = (res: Response, err: unknown, context?: string) => {
+  console.error(`[ERROR${context ? ` - ${context}` : ''}]:`, err);
   const message = err instanceof Error ? err.message : 'Internal Server Error';
   return res.status(500).json({ success: false, message });
 };

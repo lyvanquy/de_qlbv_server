@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
-import { ok, created, notFound, serverError, badRequest } from '../utils/response';
+import { ok, created, notFound, badRequest, errorResponse } from '../utils/response';
 
 export const getItems = async (req: Request, res: Response) => {
   try {
@@ -10,14 +10,19 @@ export const getItems = async (req: Request, res: Response) => {
     if (category) where.category = category;
     const items = await prisma.inventoryItem.findMany({ where, orderBy: { name: 'asc' } });
     return ok(res, items);
-  } catch { return serverError(res); }
+  } catch (err) { 
+    return errorResponse(res, err, 'getItems'); 
+  }
 };
 
 export const createItem = async (req: Request, res: Response) => {
   try {
+    console.log('[createItem] Request body:', req.body);
     const item = await prisma.inventoryItem.create({ data: req.body });
     return created(res, item);
-  } catch { return serverError(res); }
+  } catch (err) { 
+    return errorResponse(res, err, 'createItem'); 
+  }
 };
 
 export const adjustInventory = async (req: Request, res: Response) => {
@@ -36,19 +41,26 @@ export const adjustInventory = async (req: Request, res: Response) => {
       prisma.inventoryMovement.create({ data: { itemId: id, type, quantity, reason } }),
     ]);
     return ok(res, updated);
-  } catch { return serverError(res); }
+  } catch (err) { 
+    return errorResponse(res, err, 'adjustInventory'); 
+  }
 };
 
 export const updateItem = async (req: Request, res: Response) => {
   try {
+    console.log('[updateItem] Request body:', req.body);
     const item = await prisma.inventoryItem.update({ where: { id: req.params.id }, data: req.body });
     return ok(res, item);
-  } catch { return serverError(res); }
+  } catch (err) { 
+    return errorResponse(res, err, 'updateItem'); 
+  }
 };
 
 export const deleteItem = async (req: Request, res: Response) => {
   try {
     await prisma.inventoryItem.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Item deleted successfully');
-  } catch { return serverError(res); }
+  } catch (err) { 
+    return errorResponse(res, err, 'deleteItem'); 
+  }
 };
