@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
-import { ok, created, notFound, serverError } from '../utils/response';
+import { ok, created, notFound, errorResponse } from '../utils/response';
 
 export const getPatients = async (req: Request, res: Response) => {
   try {
@@ -17,8 +17,8 @@ export const getPatients = async (req: Request, res: Response) => {
     ]);
 
     return ok(res, { patients, total, page: parseInt(page), limit: parseInt(limit) });
-  } catch {
-    return serverError(res);
+  } catch (err) {
+    return errorResponse(res, err, 'getPatients');
   }
 };
 
@@ -36,26 +36,28 @@ export const getPatient = async (req: Request, res: Response) => {
     });
     if (!patient) return notFound(res, 'Patient not found');
     return ok(res, patient);
-  } catch {
-    return serverError(res);
+  } catch (err) {
+    return errorResponse(res, err, 'getPatient');
   }
 };
 
 export const createPatient = async (req: Request, res: Response) => {
   try {
+    console.log('[createPatient] Request body:', req.body);
     const patient = await prisma.patient.create({ data: req.body });
     return created(res, patient);
-  } catch {
-    return serverError(res);
+  } catch (err) {
+    return errorResponse(res, err, 'createPatient');
   }
 };
 
 export const updatePatient = async (req: Request, res: Response) => {
   try {
+    console.log('[updatePatient] Request body:', req.body);
     const patient = await prisma.patient.update({ where: { id: req.params.id }, data: req.body });
     return ok(res, patient);
-  } catch {
-    return serverError(res);
+  } catch (err) {
+    return errorResponse(res, err, 'updatePatient');
   }
 };
 
@@ -63,7 +65,7 @@ export const deletePatient = async (req: Request, res: Response) => {
   try {
     await prisma.patient.delete({ where: { id: req.params.id } });
     return ok(res, null, 'Patient deleted');
-  } catch {
-    return serverError(res);
+  } catch (err) {
+    return errorResponse(res, err, 'deletePatient');
   }
 };
