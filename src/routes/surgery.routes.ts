@@ -11,5 +11,6 @@ router.get('/operating-rooms', requirePermission('patient.view'), sc.getOperatin
 router.get('/:id', requirePermission('patient.view'), sc.getSurgery);
 router.post('/', requirePermission('surgery.schedule'), sc.createSurgery);
 router.put('/:id', requirePermission('surgery.update'), sc.updateSurgery);
+router.delete('/:id', requirePermission('surgery.update'), sc.deleteSurgery);
 
 export default router;

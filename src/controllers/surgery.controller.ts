@@ -92,3 +92,11 @@ export const getOperatingRooms = async (_req: Request, res: Response) => {
     return ok(res, ors);
   } catch { return serverError(res); }
 };
+
+export const deleteSurgery = async (req: Request, res: Response) => {
+  try {
+    const spr = prisma as never as { surgery: { delete: (a: unknown) => Promise<unknown> } };
+    await spr.surgery.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Surgery deleted successfully');
+  } catch { return serverError(res); }
+};

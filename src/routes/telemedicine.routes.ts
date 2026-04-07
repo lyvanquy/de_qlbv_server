@@ -9,6 +9,7 @@ router.get('/', c.getTeleConsults);
 router.get('/:id', c.getTeleConsult);
 router.post('/', c.createTeleConsult);
 router.put('/:id', c.updateTeleConsult);
+router.delete('/:id', c.deleteTeleConsult);
 router.post('/:id/start', c.startSession);
 router.post('/:id/end', c.endSession);
 

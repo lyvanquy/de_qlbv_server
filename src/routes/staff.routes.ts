@@ -8,6 +8,8 @@ router.use(authenticate);
 
 router.get('/', sc.getStaff);
 router.post('/', authorize('ADMIN'), sc.createStaff);
+router.put('/:id', authorize('ADMIN'), sc.updateStaff);
+router.delete('/:id', authorize('ADMIN'), sc.deleteStaff);
 router.get('/shifts', sc.getShifts);
 router.post('/shifts', authorize('ADMIN'), sc.createShift);
 

@@ -47,3 +47,13 @@ export const updateDoctor = async (req: Request, res: Response) => {
     return serverError(res);
   }
 };
+
+export const deleteDoctor = async (req: Request, res: Response) => {
+  try {
+    await prisma.doctor.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Doctor deleted successfully');
+  } catch {
+    return serverError(res);
+  }
+};
+};

@@ -73,3 +73,10 @@ export const endSession = async (req: Request, res: Response) => {
     return successResponse(res, consult);
   } catch (e) { return errorResponse(res, e); }
 };
+
+export const deleteTeleConsult = async (req: Request, res: Response) => {
+  try {
+    await prisma.teleConsult.delete({ where: { id: req.params.id } });
+    return successResponse(res, { deleted: true });
+  } catch (e) { return errorResponse(res, e); }
+};

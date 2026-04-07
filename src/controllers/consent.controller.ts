@@ -57,3 +57,10 @@ export const deleteConsentForm = async (req: Request, res: Response) => {
     return successResponse(res, { deleted: true });
   } catch (e) { return errorResponse(res, e); }
 };
+
+export const updateConsentForm = async (req: Request, res: Response) => {
+  try {
+    const form = await prisma.consentForm.update({ where: { id: req.params.id }, data: req.body });
+    return successResponse(res, form);
+  } catch (e) { return errorResponse(res, e); }
+};

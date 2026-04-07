@@ -38,3 +38,17 @@ export const adjustInventory = async (req: Request, res: Response) => {
     return ok(res, updated);
   } catch { return serverError(res); }
 };
+
+export const updateItem = async (req: Request, res: Response) => {
+  try {
+    const item = await prisma.inventoryItem.update({ where: { id: req.params.id }, data: req.body });
+    return ok(res, item);
+  } catch { return serverError(res); }
+};
+
+export const deleteItem = async (req: Request, res: Response) => {
+  try {
+    await prisma.inventoryItem.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Item deleted successfully');
+  } catch { return serverError(res); }
+};

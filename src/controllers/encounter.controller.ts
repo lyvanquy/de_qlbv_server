@@ -140,3 +140,12 @@ export const addDiagnosis = async (req: Request, res: Response) => {
     return created(res, diag);
   } catch { return serverError(res); }
 };
+
+export const deleteEncounter = async (req: Request, res: Response) => {
+  try {
+    const ep = encounterPrisma();
+    const epr = ep as never as { encounter: { delete: (a: unknown) => Promise<unknown> } };
+    await epr.encounter.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Encounter deleted successfully');
+  } catch { return serverError(res); }
+};

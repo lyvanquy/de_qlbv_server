@@ -45,6 +45,20 @@ export const getShifts = async (req: Request, res: Response) => {
   } catch { return serverError(res); }
 };
 
+export const updateStaff = async (req: Request, res: Response) => {
+  try {
+    const staff = await prisma.staff.update({ where: { id: req.params.id }, data: req.body });
+    return ok(res, staff);
+  } catch { return serverError(res); }
+};
+
+export const deleteStaff = async (req: Request, res: Response) => {
+  try {
+    await prisma.staff.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Staff deleted successfully');
+  } catch { return serverError(res); }
+};
+
 export const createShift = async (req: Request, res: Response) => {
   try {
     const shift = await prisma.shift.create({ data: req.body });

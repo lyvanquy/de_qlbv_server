@@ -8,6 +8,8 @@ router.use(authenticate);
 
 router.get('/', ic.getItems);
 router.post('/', authorize('ADMIN'), ic.createItem);
+router.put('/:id', authorize('ADMIN'), ic.updateItem);
+router.delete('/:id', authorize('ADMIN'), ic.deleteItem);
 router.post('/:id/adjust', authorize('ADMIN'), ic.adjustInventory);
 
 export default router;

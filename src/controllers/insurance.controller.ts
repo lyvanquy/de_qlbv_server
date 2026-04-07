@@ -60,3 +60,19 @@ export const updateClaimStatus = async (req: Request, res: Response) => {
     return ok(res, claim);
   } catch { return serverError(res); }
 };
+
+export const deletePolicy = async (req: Request, res: Response) => {
+  try {
+    const ipr = prisma as never as { insurancePolicy: { delete: (a: unknown) => Promise<unknown> } };
+    await ipr.insurancePolicy.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Policy deleted successfully');
+  } catch { return serverError(res); }
+};
+
+export const deleteClaim = async (req: Request, res: Response) => {
+  try {
+    const ipr = prisma as never as { insuranceClaim: { delete: (a: unknown) => Promise<unknown> } };
+    await ipr.insuranceClaim.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Claim deleted successfully');
+  } catch { return serverError(res); }
+};

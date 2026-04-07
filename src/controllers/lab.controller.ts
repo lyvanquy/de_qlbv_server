@@ -133,3 +133,17 @@ export const updateSpecimenStatus = async (req: Request, res: Response) => {
     return ok(res, specimen);
   } catch { return serverError(res); }
 };
+
+export const deleteLabTest = async (req: Request, res: Response) => {
+  try {
+    await prisma.labTest.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Lab test deleted successfully');
+  } catch { return serverError(res); }
+};
+
+export const deleteLabOrder = async (req: Request, res: Response) => {
+  try {
+    await prisma.labOrder.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Lab order deleted successfully');
+  } catch { return serverError(res); }
+};

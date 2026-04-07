@@ -73,3 +73,12 @@ export const updateBillStatus = async (req: Request, res: Response) => {
     return serverError(res);
   }
 };
+
+export const deleteBill = async (req: Request, res: Response) => {
+  try {
+    await prisma.bill.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Bill deleted successfully');
+  } catch {
+    return serverError(res);
+  }
+};

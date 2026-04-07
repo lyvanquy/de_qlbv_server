@@ -51,6 +51,14 @@ export const adjustStock = async (req: Request, res: Response) => {
   } catch { return serverError(res); }
 };
 
+export const deleteMedicine = async (req: Request, res: Response) => {
+  try {
+    await prisma.medicine.delete({ where: { id: req.params.id } });
+    return ok(res, null, 'Medicine deleted successfully');
+  } catch { return serverError(res); }
+};
+};
+
 export const dispensePrescription = async (req: Request, res: Response) => {
   try {
     const { prescriptionId } = req.params;

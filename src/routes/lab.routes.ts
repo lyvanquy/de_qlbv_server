@@ -8,8 +8,10 @@ router.use(authenticate);
 
 router.get('/tests', lc.getLabTests);
 router.post('/tests', requirePermission('admin.users'), lc.createLabTest);
+router.delete('/tests/:id', requirePermission('admin.users'), lc.deleteLabTest);
 router.get('/orders', requirePermission('lab.view_result'), lc.getLabOrders);
 router.post('/orders', requirePermission('lab.create_order'), lc.createLabOrder);
+router.delete('/orders/:id', requirePermission('admin.users'), lc.deleteLabOrder);
 router.patch('/orders/items/:itemId/result', requirePermission('lab.process'), lc.updateLabResult);
 
 // Specimen tracking
